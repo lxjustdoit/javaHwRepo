@@ -8,7 +8,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import javax.swing.text.html.parser.Entity;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -55,7 +54,7 @@ public class HttpClientDemo {
     }
 
     public static void main(String[] args) throws Exception {
-        String url = "http://localhost:8801";
+        String url = "http://localhost:8088";
         String respose = HttpClientDemo.get(url);
         System.out.println("url: "+url+", response: "+respose);
     }

@@ -1,4 +1,30 @@
-package outbound;
+package outbound.httpclient4;
+
+import filter.HeaderHttpResponseFilter;
+import filter.HttpRequestFilter;
+import filter.HttpResponseFilter;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.*;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
+import router.HttpEndpointRouter;
+import org.apache.http.protocol.HTTP;
+import router.RandomHttpEndpointRouter;
+
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
+
+import static io.netty.handler.codec.http.HttpResponseStatus.NO_CONTENT;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class HttpOutboundHandler {
     private CloseableHttpAsyncClient httpclient;
@@ -39,10 +65,12 @@ public class HttpOutboundHandler {
         return backend.endsWith("/")?backend.substring(0,backend.length()-1):backend;
     }
 
-    public void handle(final FullHttpRequest fullRequest, final ChannelHandlerContext ctx, HttpRequestFilter filter) {
+    public void handle(final FullHttpRequest fullRequest, final ChannelHandlerContext ctx, HttpRequestFilter... filters) {
         String backendUrl = router.route(this.backendUrls);
         final String url = backendUrl + fullRequest.uri();
-        filter.filter(fullRequest, ctx);
+        for(HttpRequestFilter filter: filters){
+            filter.filter(fullRequest, ctx);
+        }
         proxyService.submit(()->fetchGet(fullRequest, ctx, url));
     }
 

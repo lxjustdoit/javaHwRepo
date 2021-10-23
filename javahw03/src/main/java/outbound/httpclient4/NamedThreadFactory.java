@@ -1,6 +1,9 @@
-package outbound;
+package outbound.httpclient4;
 
-public class NamedThreadFactory {
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class NamedThreadFactory implements ThreadFactory {
     private final ThreadGroup group;
     private final AtomicInteger threadNumber = new AtomicInteger(1);
 
